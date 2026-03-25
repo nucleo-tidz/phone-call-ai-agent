@@ -3,6 +3,7 @@ using infrastructure.Plugins;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using model;
 using System.Text.Json;
 
 namespace infrastructure.Factory
@@ -17,7 +18,7 @@ namespace infrastructure.Factory
             {
                 ChatOptions = new ChatOptions()
                 {
-                    ResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat.ForJsonSchema<AgentResponse>(),
+                    ResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat.ForJsonSchema<ContainerAgentResponse>(),
                     Instructions = """
                      You are a professional shipment assistant with expertise in freight and container logistics.
                      You help users retrieve accurate, up-to-date information about their shipment bookings.
@@ -64,12 +65,12 @@ namespace infrastructure.Factory
                     }),
             }, services: serviceProvider);
         }
-        public async Task<AgentResponse> Start(string userInput)
+        public async Task<ContainerAgentResponse> Start(string userInput)
         {
             var agent = Create();
             var session = await agent.CreateSessionAsync();
             var response = await agent.RunAsync(userInput, session);
-            return JsonSerializer.Deserialize<AgentResponse>(response.Text)!;
+            return JsonSerializer.Deserialize<ContainerAgentResponse>(response.Text)!;
         }
     }
 }

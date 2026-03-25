@@ -1,13 +1,15 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using model;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace infrastructure.Factory
 {
-    internal interface IAgent
+    public interface IAgent
     {
-        AIAgent Create();
+        Task<ContainerAgentResponse> Start(string userInput);
     }
 }

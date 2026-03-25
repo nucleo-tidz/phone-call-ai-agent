@@ -27,10 +27,12 @@ jobs:
           dotnet build ./api.sln --configuration Release
       
     - name: Publish
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: dotnet publish ./src/api/api.csproj --configuration Release --output ./publish-output
       
-    # Deploy to Azure Web apps
-    - name: 'Run Azure webapp deploy action using publish profile credentials'
+
+    - name: 'Deploy To Web App'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: azure/webapps-deploy@v3
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }}

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using infrastructure.Factory;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
@@ -9,37 +10,39 @@ namespace api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ValidateRequest]
-    public class CallController(IConfiguration configuration) : TwilioController
+    public class CallController(IConfiguration configuration, IAgent agent) : TwilioController
     {
         [HttpPost]
-        public TwiMLResult IncomingCall()
+        public async Task<TwiMLResult> IncomingCall()
         {
+            var agentResponse = await agent.Start("hello");
             var baseUrl = configuration["App:BaseUrl"];
             var response = new VoiceResponse();
-            var gather = new Gather(input: 
+            var gather = new Gather(input:
                              new List<Gather.InputEnum> { Gather.InputEnum.Speech },
-                                    action: new Uri($"{baseUrl}/call/process"),
+                                    action: new Uri($"{baseUrl}/api/call/process"),
                                     method: Twilio.Http.HttpMethod.Post
                                     );
-            gather.Say("Welcome to nucleus shipment , How can I help ?");
+            gather.Say(agentResponse.Response);
             response.Append(gather);
 
             return TwiML(response);
         }
         [HttpPost("process")]
-        public TwiMLResult Process([FromForm] string speechResult)
+        public async Task<TwiMLResult> Process([FromForm] string speechResult)
         {
-
+           
             var baseUrl = configuration["App:BaseUrl"];
             var response = new VoiceResponse();
 
             if (!string.IsNullOrWhiteSpace(speechResult))
             {
-                response.Say($"You said {speechResult}");
+                var agentResponse = await agent.Start(speechResult);
+                response.Say(agentResponse.Response);
             }
 
             var gather = new Gather(input: new List<Gather.InputEnum> { Gather.InputEnum.Speech },
-                                    action: new Uri($"{baseUrl}/agent/process"),
+                                    action: new Uri($"{baseUrl}/api/call/process"),
                                     method: Twilio.Http.HttpMethod.Post);
             response.Append(gather);
 

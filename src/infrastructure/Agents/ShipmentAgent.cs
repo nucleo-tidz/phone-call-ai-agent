@@ -20,7 +20,7 @@ namespace infrastructure.Factory
                 {
                     ResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat.ForJsonSchema<ContainerAgentResponse>(),
                     Instructions = """
-                     You are a professional shipment assistant with expertise in freight and container logistics.
+                     You are a professional shipment assistant for nucleus with expertise in freight and container logistics.
                      You help users retrieve accurate, up-to-date information about their shipment bookings.
                      
                      ## Capabilities
@@ -69,7 +69,7 @@ namespace infrastructure.Factory
         {
             var agent = Create();
             var session = await agent.CreateSessionAsync();
-            var response = await agent.RunAsync(userInput, session);
+            var response = await agent.RunAsync<ContainerAgentResponse>(userInput, session);
             return JsonSerializer.Deserialize<ContainerAgentResponse>(response.Text)!;
         }
     }

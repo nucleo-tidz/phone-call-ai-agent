@@ -42,7 +42,7 @@ namespace infrastructure
         public static IServiceCollection AddAgents(this IServiceCollection services)
         {
             services.AddTransient<IAgent,ShipmentAgent>()
-                .AddTransient<ContainerPlugin>();
+                .AddTransient<ShipmentPlugin>();
             return services;
         }
     }

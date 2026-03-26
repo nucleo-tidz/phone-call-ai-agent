@@ -41,7 +41,8 @@ namespace infrastructure
         }
         public static IServiceCollection AddAgents(this IServiceCollection services)
         {
-            services.AddTransient<IAgent,ShipmentAgent>()
+            services.AddSingleton<IShipmentAgentFactory,ShipmentAgentFactory>()
+                .AddTransient<IAgent,ShipmentAgent>()
                 .AddTransient<ShipmentPlugin>();
             return services;
         }
